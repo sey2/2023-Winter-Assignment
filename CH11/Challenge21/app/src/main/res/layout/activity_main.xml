@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/InputActivtyBtn"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="책 정보 입력 액티비티"
+            app:backgroundTint="#B2DFDB" />
+
+        <Button
+            android:id="@+id/loadActivityBtn"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="책 정보  불러오기"
+            app:backgroundTint="#B2DFDB" />
+
+        <Button
+            android:id="@+id/modiftActivityBtn"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="책 정보 수정 액티비티"
+            app:backgroundTint="#B2DFDB" />
+
+        <Button
+            android:id="@+id/deleteActivityBtn"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="책 정보 삭제 액티비티"
+            app:backgroundTint="#B2DFDB" />
+    </LinearLayout>
+
+</LinearLayout>
