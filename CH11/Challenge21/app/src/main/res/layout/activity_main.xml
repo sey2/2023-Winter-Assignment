@@ -26,21 +26,6 @@
             android:text="책 정보  불러오기"
             app:backgroundTint="#B2DFDB" />
 
-        <Button
-            android:id="@+id/modiftActivityBtn"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="책 정보 수정 액티비티"
-            app:backgroundTint="#B2DFDB" />
-
-        <Button
-            android:id="@+id/deleteActivityBtn"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="책 정보 삭제 액티비티"
-            app:backgroundTint="#B2DFDB" />
     </LinearLayout>
 
 </LinearLayout>

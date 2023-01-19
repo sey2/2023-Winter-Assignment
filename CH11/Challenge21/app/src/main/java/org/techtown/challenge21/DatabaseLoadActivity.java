@@ -4,19 +4,27 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.EditText;
 
 import java.util.ArrayList;
 
 public class DatabaseLoadActivity extends AppCompatActivity {
+    private static final String TAG = "DatabaseLoadActivity";
+
     RecyclerView recyclerView;
     BookAdapter adapter;
     Database database;
+
+    Dialog dialog;
 
     public static void open(Context context){
         context.startActivity(new Intent(context, DatabaseLoadActivity.class));
@@ -28,6 +36,9 @@ public class DatabaseLoadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_database_load);
 
+        dialog = new Dialog(DatabaseLoadActivity.this);
+        dialog.setContentView(R.layout.custom_dialog);
+
         recyclerView = findViewById(R.id.recyclerView);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -36,7 +47,19 @@ public class DatabaseLoadActivity extends AppCompatActivity {
         adapter = new BookAdapter();
         recyclerView.setAdapter(adapter);
 
-        database = MainActivity.getDatabaseInstance();
+        // open database
+        if (database != null) {
+            database.close();
+            database = null;
+        }
+
+        database = Database.getInstance(this);
+        boolean isOpen = database.open();
+        if (isOpen) {
+            Log.d(TAG, "Book database is open.");
+        } else {
+            Log.d(TAG, "Book database is not open.");
+        }
 
         ArrayList<BookDTO> result = database.selectAll();
         adapter.setItems(result);
@@ -45,8 +68,9 @@ public class DatabaseLoadActivity extends AppCompatActivity {
             @Override
             public void onItemClick(BookAdapter.ViewHolder holder, View view, int position) {
                 BookDTO item = adapter.getItem(position);
+                createDialog(item);
 
-                Toast.makeText(getApplicationContext(), "아이템 선택됨 : " + item.getName(), Toast.LENGTH_LONG).show();
+                // Toast.makeText(getApplicationContext(), "아이템 선택됨 : " + item.getName(), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -60,5 +84,34 @@ public class DatabaseLoadActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void createDialog(BookDTO bookDTO) {
+        dialog.show();
+
+        EditText bookNameEdit = dialog.findViewById(R.id.nameEditText);
+        EditText authorEdit = dialog.findViewById(R.id.authorEditText);
+        EditText contentEdit = dialog.findViewById(R.id.contentEditText);
+
+        Button modify_btn = dialog.findViewById(R.id.modifyBtn);
+        modify_btn.setOnClickListener((v)->{
+            String name = bookNameEdit.getText().toString();
+            String author = authorEdit.getText().toString();
+            String content = contentEdit.getText().toString();
+
+            database.updateRecord(name, author, content, bookDTO);
+            dialog.dismiss();
+        });
+
+        Button deleteBtn = dialog.findViewById(R.id.deleteBtn);
+        deleteBtn.setOnClickListener((v)->{
+            database.deleteRecord(bookDTO);
+            dialog.dismiss();
+        });
+
+        Button canelBtn = dialog.findViewById(R.id.cancelBtn);
+        canelBtn.setOnClickListener((v)->{
+            dialog.dismiss();
+        });
     }
 }

@@ -20,10 +20,8 @@ public class MainActivity extends AppCompatActivity {
 
     Button inputActivityBtn;
     Button loadActivityBtn;
-    Button modifyActivityBtn;
-    Button deleteActivityBtn;
 
-    static Database database;
+    Database database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private void initButton(){
         inputActivityBtn = findViewById(R.id.InputActivtyBtn);
         loadActivityBtn = findViewById(R.id.loadActivityBtn);
-        modifyActivityBtn = findViewById(R.id.modiftActivityBtn);
-        deleteActivityBtn = findViewById(R.id.deleteActivityBtn);
 
         inputActivityBtn.setOnClickListener((v)->{
             DatabaseInputActivity.open(this);
@@ -61,18 +57,8 @@ public class MainActivity extends AppCompatActivity {
             DatabaseLoadActivity.open(this);
         });
 
-        modifyActivityBtn.setOnClickListener((v)->{
-            DatabaseModifyActivity.open(this);
-        });
-
-        deleteActivityBtn.setOnClickListener((v)->{
-            DatabaseDeleteActivity.open(this);
-        });
     }
 
-    public static Database getDatabaseInstance(){
-        return database;
-    }
 
     public ArrayList<BookDTO> selectAll() {
         ArrayList<BookDTO> result = database.selectAll();

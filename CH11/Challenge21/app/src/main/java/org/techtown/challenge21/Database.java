@@ -190,6 +190,27 @@ public class Database {
         }
     }
 
+    public void updateRecord(String bookName, String author, String content, BookDTO prevBook){
+        try{
+            String id = findId(prevBook.name);
+            db.execSQL("UPDATE " + TABLE_BOOK_INFO + " SET " + "NAME='" + bookName + "',"
+                      +"AUTHOR='" + author +"',"
+                      +"CONTENTS='" + content
+                      +"' WHERE _id=" + id);
+        }catch (Exception e){
+            Log.e(TAG, "Exception in excuting update SQL");
+        }
+    }
+
+    public void deleteRecord(BookDTO bookDTO){
+        try{
+            String id = findId(bookDTO.name);
+            db.execSQL("DELETE FROM " + TABLE_BOOK_INFO + " where _id=" + id);
+        }catch (Exception e){
+            Log.e(TAG, "Exception in excuting update SQL");
+        }
+    }
+
     public ArrayList<BookDTO> selectAll() {
         ArrayList<BookDTO> result = new ArrayList<BookDTO>();
 
@@ -210,6 +231,27 @@ public class Database {
         }
 
         return result;
+    }
+
+    public String findId(String bookName) {
+        ArrayList<BookDTO> result = new ArrayList<BookDTO>();
+
+        try {
+            Cursor cursor = db.rawQuery("select _id, NAME from " + TABLE_BOOK_INFO, null);
+            for (int i = 0; i < cursor.getCount(); i++) {
+                cursor.moveToNext();
+                String id = cursor.getString(0);
+                String name = cursor.getString(1);
+
+                if(name.equals(bookName))
+                    return id;
+            }
+
+        } catch(Exception ex) {
+            Log.e(TAG, "Exception in executing insert SQL.", ex);
+        }
+
+        return "-1";
     }
 
     private void println(String msg) {

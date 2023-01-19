@@ -33,7 +33,19 @@ public class DatabaseInputActivity extends AppCompatActivity {
         editText2 = findViewById(R.id.editText2);
         editText3 = findViewById(R.id.editText3);
 
-        database = MainActivity.getDatabaseInstance();
+        // open database
+        if (database != null) {
+            database.close();
+            database = null;
+        }
+
+        database = Database.getInstance(this);
+        boolean isOpen = database.open();
+        if (isOpen) {
+            Log.d(TAG, "Book database is open.");
+        } else {
+            Log.d(TAG, "Book database is not open.");
+        }
 
         Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -45,6 +57,8 @@ public class DatabaseInputActivity extends AppCompatActivity {
 
                 database.insertRecord(name, author, contents);
                 Toast.makeText(getApplicationContext(), "책 정보를 추가했습니다.", Toast.LENGTH_LONG).show();
+                database.close();
+                finish();
             }
         });
     }
