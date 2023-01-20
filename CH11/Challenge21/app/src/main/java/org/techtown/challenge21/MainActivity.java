@@ -28,9 +28,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 버튼 바인딩 및 초기화
         initButton();
 
-        // open database
+        // 데이터 베이스 오픈
         if (database != null) {
             database.close();
             database = null;
@@ -58,14 +59,5 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
-
-    public ArrayList<BookDTO> selectAll() {
-        ArrayList<BookDTO> result = database.selectAll();
-        Toast.makeText(getApplicationContext(), "책 정보를 조회했습니다.", Toast.LENGTH_LONG).show();
-
-        return result;
-    }
-
 
 }

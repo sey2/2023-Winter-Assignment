@@ -11,49 +11,32 @@ import java.util.ArrayList;
 public class Database {
     private static final String TAG = "BookDatabase";
 
-    /**
-     * Singleton instance
-     */
+    // 싱글톤 인스턴스 데이터베이스 오브젝트 입니다.
     private static Database database;
 
-
-    /**
-     * database name
-     */
+    // 데이터베이스 이름
     public static String DATABASE_NAME = "book.db";
 
-    /**
-     * table name for BOOK_INFO
-     */
+    // 테이블 이름
     public static String TABLE_BOOK_INFO = "BOOK_INFO";
 
-    /**
-     * version
-     */
     public static int DATABASE_VERSION = 1;
 
-
-    /**
-     * Helper class defined
-     */
+    // 헬퍼 클래스 오브젝트 선언
     private DatabaseHelper dbHelper;
 
-    /**
-     * Database object
-     */
+    // 데이터베이스 관련 작업을 하기 위한 오브젝트 입니다.
     private SQLiteDatabase db;
 
-
+    // Application에 관한 정보를 얻기 위한 오브젝트
     private Context context;
 
-    /**
-     * Constructor
-     */
     private Database(Context context) {
         this.context = context;
     }
 
 
+    // 싱글톤 인스턴스 생성 함수
     public static Database getInstance(Context context) {
         if (database == null) {
             database = new Database(context);
@@ -62,9 +45,7 @@ public class Database {
         return database;
     }
 
-    /**
-     * open database
-     */
+    // 데이터베에스 open 함수
     public boolean open() {
         println("opening database [" + DATABASE_NAME + "].");
 
@@ -74,9 +55,7 @@ public class Database {
         return true;
     }
 
-    /**
-     * close database
-     */
+    // 데이터베이스를 닫는 함수
     public void close() {
         println("closing database [" + DATABASE_NAME + "].");
         db.close();
@@ -84,8 +63,7 @@ public class Database {
     }
 
     /**
-     * execute raw query using the input SQL
-     * close the cursor after fetching any result
+     * raw 단위로 sql문을 실행 시켜주는 함수
      */
     public Cursor rawQuery(String SQL) {
         println("\nexecuteQuery called.\n");
@@ -101,11 +79,14 @@ public class Database {
         return c1;
     }
 
+    // sql 실행 메소드
     public boolean execSQL(String SQL) {
         println("\nexecute called.\n");
 
         try {
             Log.d(TAG, "SQL : " + SQL);
+
+            // 데이터베이스 sql 문을 실행해주는 함수
             db.execSQL(SQL);
         } catch(Exception ex) {
             Log.e(TAG, "Exception in executeQuery", ex);
@@ -116,18 +97,21 @@ public class Database {
     }
 
 
-
-
+    /**
+     SQLiteOpenHelper를 사용하면 기존에 테이블이 있는지 없느지 판단하여 각각에 알맞게
+     데이터베이스 테이블을 업그레이드 시킨다는가 새로 생성할 수 있습니다.
+     */
     private class DatabaseHelper extends SQLiteOpenHelper {
         public DatabaseHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
         }
 
+        /* 테이블을 생성하는 메소드  */
         public void onCreate(SQLiteDatabase _db) {
             // TABLE_BOOK_INFO
             println("creating table [" + TABLE_BOOK_INFO + "].");
 
-            // drop existing table
+            // 테이블이 이미 존재하면 기존에 존재하는 테이블을 지웁니다.
             String DROP_SQL = "drop table if exists " + TABLE_BOOK_INFO;
             try {
                 _db.execSQL(DROP_SQL);
@@ -135,7 +119,7 @@ public class Database {
                 Log.e(TAG, "Exception in DROP_SQL", ex);
             }
 
-            // create table
+            // 테이블 생성 SQL문
             String CREATE_SQL = "create table " + TABLE_BOOK_INFO + "("
                     + "  _id INTEGER  NOT NULL PRIMARY KEY AUTOINCREMENT, "
                     + "  NAME TEXT, "
@@ -149,7 +133,7 @@ public class Database {
                 Log.e(TAG, "Exception in CREATE_SQL", ex);
             }
 
-            // insert 5 book records
+            // 5개의 레코드를 테이블에 추가합니다.
             insertRecord(_db, "Do it! 안드로이드 앱 프로그래밍", "정재곤", "안드로이드 기본서로 이지스퍼블리싱 출판사에서 출판했습니다.");
             insertRecord(_db, "Programming Android", "Mednieks, Zigurd", "Oreilly Associates Inc에서 출판했습니다.");
             insertRecord(_db, "모바일 프로그래밍", "이병옥,최성민 공저", "에이콘출판사에서 출판했습니다.");
@@ -172,6 +156,7 @@ public class Database {
 
         }
 
+        // 레코드 추가 함수
         private void insertRecord(SQLiteDatabase _db, String name, String author, String contents) {
             try {
                 _db.execSQL( "insert into " + TABLE_BOOK_INFO + "(NAME, AUTHOR, CONTENTS) values ('" + name + "', '" + author + "', '" + contents + "');" );
@@ -190,6 +175,7 @@ public class Database {
         }
     }
 
+    // 레코드 수정 함수
     public void updateRecord(String bookName, String author, String content, BookDTO prevBook){
         try{
             String id = findId(prevBook.name);
@@ -202,6 +188,7 @@ public class Database {
         }
     }
 
+    // 레코드 삭제 함수
     public void deleteRecord(BookDTO bookDTO){
         try{
             String id = findId(bookDTO.name);
@@ -211,6 +198,7 @@ public class Database {
         }
     }
 
+    // 테이블에 존재하는 모든 레코드를 조회
     public ArrayList<BookDTO> selectAll() {
         ArrayList<BookDTO> result = new ArrayList<BookDTO>();
 
@@ -233,6 +221,8 @@ public class Database {
         return result;
     }
 
+
+    // 책 이름을 통해 id 값을 찾아주는 메소드
     public String findId(String bookName) {
         ArrayList<BookDTO> result = new ArrayList<BookDTO>();
 

@@ -1,5 +1,8 @@
 package org.techtown.challenge21;
 
+/*
+  책 정보를 담는 Data Transfer Object 클래스 입니다.
+ */
 public class BookDTO {
 
     String name;
