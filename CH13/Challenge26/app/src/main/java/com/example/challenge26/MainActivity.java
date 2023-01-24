@@ -31,8 +31,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // 인플레이션
         setContentView(R.layout.activity_main);
 
+        // 바인딩
         previewFrame = findViewById(R.id.previewFrame);
         cameraView = findViewById(R.id.cameraView);
 
@@ -40,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
         icon01Image = findViewById(R.id.icon01Image);
         icon02Image = findViewById(R.id.icon02Image);
 
-
+        // 보여주기 버튼 리스너
         Button showButton = findViewById(R.id.showButton);
         showButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // 숨기기 버튼 리스너
         Button hideButton = findViewById(R.id.hideButton);
         hideButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -55,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // 라이브러리를 이용한 권한 설정
         AndPermission.with(this)
                 .runtime()
                 .permission(Permission.CAMERA,Permission.ACCESS_FINE_LOCATION)
