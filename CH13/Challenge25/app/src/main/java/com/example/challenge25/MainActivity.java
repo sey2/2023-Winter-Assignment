@@ -1,7 +1,12 @@
 package com.example.challenge25;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 
@@ -24,6 +29,10 @@ import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import com.yanzhenjie.permission.runtime.Permission;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,6 +52,17 @@ public class MainActivity extends AppCompatActivity {
 
     // 사진 정보가 담기는 ArrayList 선언
     ArrayList<PictureInfo> pictures;
+
+    static Bitmap resultPhotoBitmap;
+
+    static Bitmap updatePhotoBitmap;
+
+    static int idCnt = 0;
+
+    static PictureInfo updatePictureInfo;
+
+    /* 데이터베이스 인스턴스 */
+    public static PictureDatabase mDatabase = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +94,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // swipeLayout 이벤트 리스너 설정
+        adapter.setSwipeListener(new SwipeClickListener() {
+            @Override
+            public void onEditClick(PictureAdapter.ViewHolder holder, View view, int itemPosition, int adapterPosition, ArrayList<PictureInfo> items) {
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                updatePictureInfo = items.get(adapterPosition);
+                startActivityForResult(intent, 102);
+            }
+
+            @Override
+            public void onDeleteClick(PictureAdapter.ViewHolder holder, View view, int itemPosition, int adapterPosition, ArrayList<PictureInfo> items) {
+                // DB에서 사진 삭제
+                mDatabase.deleteRaw(items.get(adapterPosition));
+
+                items.remove(adapterPosition);
+                adapter.notifyItemRemoved(adapterPosition);
+
+            }
+        });
+
+        openDatabase();
+
         // 버튼 클릭 이벤트 설정
         Button button = findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
@@ -87,6 +131,15 @@ public class MainActivity extends AppCompatActivity {
                 // 어댑터에게 데이터 셋이 변경되었다고 알림
                 adapter.notifyDataSetChanged();
             }
+        });
+
+        // 사진에서 선택해서 데이터베이스에 저장하기
+        Button button2 = findViewById(R.id.loadBtn);
+        button2.setOnClickListener((v)->{
+            Intent intent = new Intent();
+            intent.setType("image/*");
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(intent, 101);
         });
 
         // 사진 정보 오브젝트를 모두 가져와 ArrayLists에 담음
@@ -148,20 +201,143 @@ public class MainActivity extends AppCompatActivity {
 
             if (!TextUtils.isEmpty(path)) {
                 PictureInfo info = new PictureInfo(path, displayName, addedDate);
+                info.setId(idCnt++);
                 result.add(info);
             }
+
+            adapter.notifyDataSetChanged();
 
             pictureCount++;
         }
 
+        // 데이터베이스에 저장되어 있는 사진을 불러옴
+        ArrayList<PictureInfo> dbInfo = mDatabase.selectAll();
+
+        // Adapter 새로 갱신
+        for(PictureInfo p : dbInfo) {
+            result.add(p);
+            adapter.notifyDataSetChanged();
+            pictureCount++;
+        }
+
+        // 사진 개수 textView 업데이트
         textView.setText(pictureCount + " 개");
         Log.d("MainActivity", "Picture count : " + pictureCount);
 
+        // 저장되어 있는 사진 객체 Log창에 출력
         for (PictureInfo info : result) {
             Log.d("MainActivity", info.toString());
         }
 
         return result;
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // DB에 사진 저장 요청
+        if(requestCode == 101){
+            if(resultCode == RESULT_OK){
+                Uri uri = data.getData();
+                ContentResolver resolver = getApplicationContext().getContentResolver();
+
+                try{
+                    InputStream instream = resolver.openInputStream(uri);
+                    resultPhotoBitmap = BitmapFactory.decodeStream(instream);
+                    savePicture();
+                }catch (Exception e){
+                    System.out.println(e);
+                }
+            }
+        }
+
+        // 기존에 있는 사진 수정 요청
+        if(requestCode == 102){
+            if(resultCode == RESULT_OK){
+                Uri uri = data.getData();
+                ContentResolver resolver = getApplicationContext().getContentResolver();
+
+                try{
+                    InputStream instream = resolver.openInputStream(uri);
+                    resultPhotoBitmap = BitmapFactory.decodeStream(instream);
+                    mDatabase.updatePicture(updatePictureInfo, getPicture());
+                }catch (Exception e){
+                    System.out.println(e);
+                }
+            }
+        }
+    }
+
+    // 파일 이름 생성 메소드
+    public static String createFilename(){
+        Date curDate = new Date();
+        String curDateStr = String.valueOf(curDate.getTime());
+
+        return curDateStr;
+    }
+
+    // 사진을 DB에 저장하는 메소드
+    private void savePicture(){
+        String picturePath = getPicture();
+
+        String sql = "insert into " + PictureDatabase.TABLE_NAME +
+                "(PICTURE) values(" +
+                "'"+ picturePath + "')";
+
+        Log.d("Fragment2", "sql : " + sql);
+        PictureDatabase database = PictureDatabase.getInstance(getApplicationContext());
+        database.execSQL(sql);
+
+    }
+
+
+    // Bitmap 이미지 파일 경로를 만들어서 반환하는 메소드
+    private String getPicture(){
+        if(resultPhotoBitmap == null){
+            Log.d("Image", "No Picture to be saved");
+            return "";
+        }
+
+        File photoFolder = new File( getFilesDir().getAbsolutePath() + File.separator + "photo");
+
+        if(!photoFolder.isDirectory()){
+            Log.d("MainActivity", "creating photo folder : " + photoFolder );
+            photoFolder.mkdir();
+        }
+
+        String photoFilename = createFilename();
+        String picturePath = photoFolder + File.separator + photoFilename;
+
+        try {
+            FileOutputStream outstream = new FileOutputStream(picturePath);
+            resultPhotoBitmap.compress(Bitmap.CompressFormat.PNG, 100, outstream);
+            outstream.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return picturePath;
+    }
+
+    /*  데이터베이스 열기 (데이터베이스가 없을 때는 만들기) */
+    public void openDatabase() {
+        // open database
+        if (mDatabase != null) {
+            mDatabase.close();
+            mDatabase = null;
+        }
+
+        mDatabase = PictureDatabase.getInstance(this);
+        boolean isOpen = mDatabase.open();
+        if (isOpen) {
+            Log.d("MainActivity", "Note database is open.");
+        } else {
+            Log.d("MainActivity>", "Note database is not open.");
+        }
+    }
+
+
 
 }

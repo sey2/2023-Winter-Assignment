@@ -6,6 +6,8 @@ public class PictureInfo {
     String path;
     String displayName;
     String dateAdded;
+    int id;
+    int _id;
 
     public PictureInfo(String path, String displayName, String dateAdded) {
         this.path = path;
@@ -36,6 +38,10 @@ public class PictureInfo {
     public void setDateAdded(String dateAdded) {
         this.dateAdded = dateAdded;
     }
+
+    public void setId(int id){this.id = id;}
+
+    public void setPrimaryKey(int _id){this._id = _id;}
 
     @Override
     public String toString() {
