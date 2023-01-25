@@ -168,6 +168,9 @@ public class BookDatabase {
 
     public void insertRecord(String name, String author, String contents) {
         try {
+            // insert into 테이블 이름 (레코드) values (업데이트할 내용들)
+            //  레코드 내용을 추가할 때는 위와 같이 사용합니다.
+            // 따라서 해당 SQL문을 만들어 execSQL 메소드를 이용해 SQL문을 실행하면 테이블에 레코드가 추가 됩니다.
             db.execSQL( "insert into " + TABLE_BOOK_INFO + "(NAME, AUTHOR, CONTENTS) values ('" + name + "', '" + author + "', '" + contents + "');" );
         } catch(Exception ex) {
             Log.e(TAG, "Exception in executing insert SQL.", ex);
@@ -178,7 +181,12 @@ public class BookDatabase {
     // 레코드 수정 함수
     public void updateRecord(String bookName, String author, String content, BookDTO prevBook){
         try{
+            // 선택된 아이템 (책 정보)의 기본 키 값을 찾음
             String id = findId(prevBook.name);
+
+            // Update 테이블 이름 Set 수정하고 싶은 컬럼 = '내용' Where 컬럼='';
+            // 레코드 내용을 수정할 때는 위와 같이 사용합니다.
+            // 따라서 해당 SQL문을 만들어 execSQL 메소드를 이용해 SQL문을 실행하면 레코드가 업데이트 됩니다.
             db.execSQL("UPDATE " + TABLE_BOOK_INFO + " SET " + "NAME='" + bookName + "',"
                     +"AUTHOR='" + author +"',"
                     +"CONTENTS='" + content
@@ -191,6 +199,9 @@ public class BookDatabase {
     // 레코드 삭제 함수
     public void deleteRecord(BookDTO bookDTO){
         try{
+            // DELETE FROM 테이블 이름 wehre 삭제할 레코드 ='';
+            // 데이터베이스에서 레코드를 삭제할시 위와 같이 사용합니다.
+            // 따라서 해당 SQL문을 만들어 execSQL 메소드를 이용해 SQL문을 실행하면 레코드가 삭제 됩니다.
             String id = findId(bookDTO.name);
             db.execSQL("DELETE FROM " + TABLE_BOOK_INFO + " where _id=" + id);
         }catch (Exception e){
@@ -224,6 +235,9 @@ public class BookDatabase {
         ArrayList<BookDTO> result = new ArrayList<BookDTO>();
 
         try {
+            // Cursor 객체는 해당 테이블에 커서를 가져다 댄다고 생각할 수 있습니다.
+            // 처음에 커서를 가져다 되면 1행에 커서가 가져가고 테이블 1행의 내용에 접근할 수 있게 됩니다.
+            // 커서를 다음으로 옮기게 되면 2행 내용에 접근 할 수 있게 되고 이런식으로 테이블의 내용을 접근할 때 Cursor를 이용합니다.
             Cursor cursor = db.rawQuery("select NAME, AUTHOR, CONTENTS from " + TABLE_BOOK_INFO, null);
             for (int i = 0; i < cursor.getCount(); i++) {
                 cursor.moveToNext();
