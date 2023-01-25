@@ -28,7 +28,7 @@ public class DatabaseLoadActivity extends AppCompatActivity {
     Dialog dialog;
 
 
-    // DatavaseLoadActivty 화면을 띄워즈는 함수
+    // DatavaseLoadActivty 화면을 띄워wn는 함수
     public static void open(Context context){
         context.startActivity(new Intent(context, DatabaseLoadActivity.class));
     }
