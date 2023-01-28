@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/2023-Winter-Assignment/2023-Winter-Assignment/CH14/Challenge28/app/src/main/res/layout/activity_main.xml" value="0.34791666666666665" />
+        <entry key="..\:/2023-Winter-Assignment/2023-Winter-Assignment/CH14/Challenge28/app/src/main/res/layout/my_location.xml" value="0.34791666666666665" />
+        <entry key="..\:/2023-Winter-Assignment/2023-Winter-Assignment/CH14/Challenge28/app/src/main/res/layout/mylocation.xml" value="0.34791666666666665" />
+        <entry key="..\:/2023-Winter-Assignment/2023-Winter-Assignment/CH14/Challenge28/app/src/main/res/xml/mylocationinfo.xml" value="0.346875" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
