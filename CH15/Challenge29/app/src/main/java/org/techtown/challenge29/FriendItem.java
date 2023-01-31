@@ -6,16 +6,13 @@ public class FriendItem {
     String name;
     String mobile;
     String regId;
+    String contactId;
 
-    public FriendItem(String name, String mobile) {
-        this.name = name;
-        this.mobile = mobile;
-    }
-
-    public FriendItem(String name, String mobile, String regId) {
+    public FriendItem(String name, String mobile, String regId, String contactId) {
         this.name = name;
         this.mobile = mobile;
         this.regId = regId;
+        this.contactId = contactId;
     }
 
     public String getRegId() {
