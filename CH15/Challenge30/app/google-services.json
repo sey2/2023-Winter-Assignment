@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "807819021307",
+    "project_id": "samplepush-a1d0e",
+    "storage_bucket": "samplepush-a1d0e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807819021307:android:b5564a43bdb751a3d5595e",
+        "android_client_info": {
+          "package_name": "org.techtown.challenge30"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "807819021307-bckr70tspg35rgmv02defa2c780856nj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD94oLel-pzU_jzTVtNjFqZ1MV9Gnq6sZQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "807819021307-bckr70tspg35rgmv02defa2c780856nj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
